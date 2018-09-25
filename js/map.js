@@ -12,7 +12,7 @@ var GUESTS_MIN = 2 * ROOMS_MIN;
 var GUESTS_MAX = 2 * ROOMS_MAX;
 
 var KEY_ESC = 27;
-var KEY_ENTER = 13;
+// var KEY_ENTER = 13;
 
 var AVATARS_PATH = 'img/avatars/';
 
@@ -85,7 +85,7 @@ var PHOTOS = [
   // случайное свойство из объекта
   var getRandomProperty = function (obj) {
     var randKey = Object.keys(obj);
-    return obj[randKey[getRandom(0,randKey.length-1)]];
+    return obj[randKey[getRandom(0, randKey.length - 1)]];
   };
 
   // добавление li в DOM
@@ -155,7 +155,7 @@ var PHOTOS = [
         }
       });
 
-    };
+    }
     return promotionsList;
   };
   promotionsList = getPromotionsList();
@@ -214,8 +214,7 @@ var PHOTOS = [
 
       createPins(promotionsList);
       similarPinsElement.appendChild(fragment);
-    }
-    else {
+    } else {
       formInputAddress.value = parseInt(mapPinMain.style.top, 10) + ', ' + parseInt(mapPinMain.style.left, 10);
     }
   });
@@ -259,8 +258,7 @@ var PHOTOS = [
     if (evt.target.tagName === 'BUTTON') {
       createCard(promotionsList, indexForArray);
       cardElement.classList.remove('hidden');
-    }
-    else if (evt.target.tagName === 'IMG' && parentEl.dataset.adsId !== 'undefined' && parentEl.className !== 'map__pin map__pin--main') {
+    } else if (evt.target.tagName === 'IMG' && parentEl.dataset.adsId !== 'undefined' && parentEl.className !== 'map__pin map__pin--main') {
       indexForArray = parentEl.dataset.adsId;
       createCard(promotionsList, indexForArray);
       cardElement.classList.remove('hidden');
