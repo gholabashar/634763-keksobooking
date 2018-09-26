@@ -1,6 +1,6 @@
 'use strict';
 
-var LOCATION_X_MIN = 100;
+var LOCATION_X_MIN = 250;
 var LOCATION_X_MAX = 1000;
 var LOCATION_Y_MIN = 130;
 var LOCATION_Y_MAX = 630;
@@ -10,6 +10,9 @@ var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
 var GUESTS_MIN = 2 * ROOMS_MIN;
 var GUESTS_MAX = 2 * ROOMS_MAX;
+
+var KEY_ESC = 27;
+// var KEY_ENTER = 13;
 
 var AVATARS_PATH = 'img/avatars/';
 
@@ -63,8 +66,6 @@ var PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-document.querySelector('.map').classList.remove('map--faded');
-
 (function () {
   var promotionsList = [];
 
@@ -74,6 +75,8 @@ document.querySelector('.map').classList.remove('map--faded');
   var similarCardElement = document.querySelector('.map');
   var similarCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
+  var cardElement = similarCardTemplate.cloneNode(true);
+
   // создание случайных чисел
   var getRandom = function (min, max) {
     return Math.floor(Math.random() * (max + 1 - min) + min);
@@ -82,7 +85,7 @@ document.querySelector('.map').classList.remove('map--faded');
   // случайное свойство из объекта
   var getRandomProperty = function (obj) {
     var randKey = Object.keys(obj);
-    return obj[randKey[getRandom(0,randKey.length-1)]];
+    return obj[randKey[getRandom(0, randKey.length - 1)]];
   };
 
   // добавление li в DOM
@@ -123,7 +126,8 @@ document.querySelector('.map').classList.remove('map--faded');
 
   var fragment = document.createDocumentFragment();
 
-  var createPins = function (array) {
+  // создание массива из 8 объявлений
+  var getPromotionsList = function () {
     for (var i = 0; i < 8; i++) {
 
       promotionsList.push({
@@ -151,23 +155,29 @@ document.querySelector('.map').classList.remove('map--faded');
         }
       });
 
+    }
+    return promotionsList;
+  };
+  promotionsList = getPromotionsList();
+
+  // создание объявления
+  var createPins = function (array) {
+    for (var i = 0; i < array.length; i++) {
+
       var pinsElement = similarPinsTemplate.cloneNode(true);
       pinsElement.style = 'left: ' + array[i].location.x + 'px; top: ' + array[i].location.y + 'px';
       pinsElement.querySelector('img').src = array[i].author.avatar;
       pinsElement.alt = 'Метка объявления';
+      pinsElement.dataset.adsId = i;
 
       fragment.appendChild(pinsElement);
     }
-
-    similarPinsElement.appendChild(fragment);
   };
 
-  createPins(promotionsList);
-
-  var createCard = function (array) {
-    var cardElement = similarCardTemplate.cloneNode(true);
-    var offer = array[0].offer;
-    cardElement.querySelector('img').src = array[getRandom(0, promotionsList.length - 1)].author.avatar;
+  // создание попапа
+  var createCard = function (array, i) {
+    var offer = array[i].offer;
+    cardElement.querySelector('img').src = array[i].author.avatar;
     cardElement.querySelector('.popup__title').textContent = offer.title;
     cardElement.querySelector('.popup__text--address').textContent = offer.address;
     cardElement.querySelector('.popup__text--price').textContent = offer.price;
@@ -183,5 +193,88 @@ document.querySelector('.map').classList.remove('map--faded');
     cardElement.querySelector('.popup__photos').appendChild(createPhotos(offer.photos));
   };
 
-  createCard(promotionsList);
+  var form = document.querySelector('.ad-form');
+  var addFormElements = document.querySelectorAll('fieldset, select');
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var formInputAddress = form.querySelector('.ad-form__element:nth-child(3) input');
+  formInputAddress.value = parseInt(mapPinMain.style.top, 10) + ', ' + parseInt(mapPinMain.style.left, 10);
+
+  // клик на метку и запись адреса
+  mapPinMain.addEventListener('mouseup', function () {
+    if (document.querySelector('.map').classList.value === 'map map--faded') {
+
+      document.querySelector('.map').classList.remove('map--faded');
+      form.classList.remove('ad-form--disabled');
+      formInputAddress.value = parseInt(mapPinMain.style.top, 10) + ', ' + parseInt(mapPinMain.style.left, 10);
+
+      for (var i = 0; i < addFormElements.length; i++) {
+        addFormElements[i].disabled = false;
+      }
+      formInputAddress.disabled = true;
+
+      createPins(promotionsList);
+      similarPinsElement.appendChild(fragment);
+    } else {
+      formInputAddress.value = parseInt(mapPinMain.style.top, 10) + ', ' + parseInt(mapPinMain.style.left, 10);
+    }
+  });
+
+  // перетаскивание метки
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    var startPosition = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvent) {
+      var changePosition = {
+        x: startPosition.x - moveEvent.clientX,
+        y: startPosition.y - moveEvent.clientY,
+      };
+
+      startPosition = {
+        x: moveEvent.clientX,
+        y: moveEvent.clientY
+      };
+
+      mapPinMain.style.top = (mapPinMain.offsetTop - changePosition.y) + 'px';
+      mapPinMain.style.left = (mapPinMain.offsetLeft - changePosition.x) + 'px';
+    };
+
+    var onMouseUp = function () {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+  });
+
+  // клик по объявлениям и показ попапа
+  similarPinsElement.addEventListener('click', function (evt) {
+    var indexForArray = evt.target.dataset.adsId;
+    var parentEl = evt.target.parentElement;
+    if (evt.target.tagName === 'BUTTON') {
+      createCard(promotionsList, indexForArray);
+      cardElement.classList.remove('hidden');
+    } else if (evt.target.tagName === 'IMG' && parentEl.dataset.adsId !== 'undefined' && parentEl.className !== 'map__pin map__pin--main') {
+      indexForArray = parentEl.dataset.adsId;
+      createCard(promotionsList, indexForArray);
+      cardElement.classList.remove('hidden');
+    }
+
+  });
+
+  // закрытие попапа
+  cardElement.querySelector('.popup__close').addEventListener('click', function () {
+    cardElement.classList.add('hidden');
+  });
+
+  similarCardElement.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === KEY_ESC) {
+      cardElement.classList.add('hidden');
+    }
+  });
+
 }());
