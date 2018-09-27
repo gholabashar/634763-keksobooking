@@ -3,23 +3,28 @@
 var LOCATION_X = {
   min: 250,
   max: 1000
-}
+};
+
 var LOCATION_Y = {
   min: 130,
   max: 630
-}
+};
+
 var PRICE = {
   min: 1000,
   max: 1000000
-}
+};
+
 var ROOMS = {
   min: 1,
   max: 5
-}
+};
+
 var GUESTS = {
   min: 2 * ROOMS.min,
   max: 2 * ROOMS.max
-}
+};
+
 var KEYCODE = {
   enter: 13,
   esc: 27
@@ -127,7 +132,6 @@ var capRooms = {
     var randKey = Object.keys(obj);
     return obj[randKey[getRandom(0, randKey.length - 1)]].headerText;
   };
-
 
   // добавление li в DOM
   var createFeatures = function (array) {
@@ -321,10 +325,6 @@ var capRooms = {
     inputPrice.placeholder = minCost;
   };
 
-  /**
-   * Handler for update host check time field
-   * @param {Object} evt - change select event
-   */
   var changeTime = function (evt) {
     inputTime.forEach(function (item) {
       if (evt.target.value !== item.value) {
@@ -333,10 +333,6 @@ var capRooms = {
     });
   };
 
-  /**
-   * Listener for check when title has not valid length
-   * @param {Object} evt - input text event
-   */
   var inputTitleInvalidListener = function (evt) {
     if (evt.target.value.length <= TITLE_LIMIT.min
       || evt.target.value.length >= TITLE_LIMIT.max) {
@@ -346,10 +342,6 @@ var capRooms = {
     }
   };
 
-  /**
-   * Listener for check when price not filled
-   * @param {Object} evt - input text event
-   */
   var inputPriceInvalidListener = function (evt) {
     if (!evt.target.value) {
       inputPrice.setCustomValidity(MESSAGES.price);
@@ -358,9 +350,6 @@ var capRooms = {
     }
   };
 
-  /**
-   * Check current rooms count and render options
-   */
   var roomsUpdate = function () {
     var room = inputRooms.value;
     var placesForRoom = capRooms[room];
@@ -374,9 +363,6 @@ var capRooms = {
     });
   };
 
-  /**
-   * Init event listeners when page becomes active
-   */
   var initForm = function () {
     inputTime.forEach(function (select) {
       select.addEventListener('change', changeTime);
