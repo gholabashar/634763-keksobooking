@@ -4,7 +4,6 @@
   var template = document.querySelector('#pin').content;
   var list = document.querySelector('.map__pins');
 
-
   var create = function (host) {
     var pin = template.cloneNode(true);
     var item = pin.querySelector('.map__pin');
@@ -19,7 +18,6 @@
     return item;
   };
 
-
   var pinClickHandler = function (evt, i) {
     var selected = document.querySelector('.map__pin--active');
     var host = window.data.getDataItem(i);
@@ -31,7 +29,6 @@
     }
     evt.currentTarget.classList.add('map__pin--active');
   };
-
 
   var render = function (hosts) {
     hosts.forEach(function (host, i) {

@@ -71,12 +71,12 @@
     }
     return hosts;
   };
-  hosts = getHosts();
 
+  hosts = getHosts();
   var getData = hosts;
 
   var getDataItem = function (index) {
-    var getData = hosts;
+    getData = hosts;
     return getData[index];
   };
 

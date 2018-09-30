@@ -4,7 +4,6 @@
   var pin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
-
   var getPinPosition = function () {
     var pinX = parseInt(pin.style.left, 10) - window.utils.Pin.GAP_X;
     var pinY = parseInt(pin.style.top, 10) - window.utils.Pin.GAP_Y;
@@ -12,13 +11,11 @@
     return [pinX, pinY].join(', ');
   };
 
-
   var pinMousedownHandler = function (evt) {
     var startPoints = {
       x: evt.clientX,
       y: evt.clientY
     };
-
 
     var pinMousemoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
@@ -50,7 +47,6 @@
       }
     };
 
-
     var pinMouseupHandler = function (upEvt) {
       upEvt.preventDefault();
       document.removeEventListener('mousemove', pinMousemoveHandler);
@@ -66,7 +62,6 @@
     map.classList.remove('map--faded');
   };
 
-
   var setPageActive = function () {
     mapInit();
     window.form.init(getPinPosition());
@@ -77,7 +72,6 @@
     pin.removeEventListener('keydown', pinKeydownHandler);
   };
 
-
   var setPageDisabled = function () {
     window.form.toggle(true);
     window.form.setAdress(getPinPosition());
@@ -87,17 +81,14 @@
     pin.tabIndex = 0;
   };
 
-
   var pinMouseupHandler = function () {
     setPageActive();
     pin.removeEventListener('mouseup', pinMouseupHandler);
   };
 
-
   var pinKeydownHandler = function (evt) {
     window.utils.enterKeyCheck(evt.keyCode, setPageActive);
   };
-
 
   setPageDisabled();
 

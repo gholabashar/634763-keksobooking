@@ -38,11 +38,9 @@
     }
   };
 
-
   var getRandomNumber = function (minNumber, maxNumber) {
     return Math.floor((Math.random() * (maxNumber - minNumber) + minNumber));
   };
-
 
   var getRandomItem = function (array) {
     return array[getRandomNumber(0, array.length)];
@@ -53,22 +51,19 @@
   };
 
   var getSortedList = function (list) {
-      list.sort(sortElements);
+    list.sort(sortElements);
     return list;
   };
-
 
   var getHostTypes = function (type) {
     return hostTypes[type];
   };
-
 
   var escKeyCheck = function (keyCode, callback) {
     if (keyCode === KeyCode.ESC) {
       callback();
     }
   };
-
 
   var enterKeyCheck = function (keyCode, callback) {
     if (keyCode === KeyCode.ENTER) {

@@ -38,7 +38,6 @@
     return item;
   };
 
-
   var renderFeatures = function (parent, features) {
     parent.textContent = '';
 
@@ -52,7 +51,6 @@
       parent.style.display = 'none';
     }
   };
-
 
   var renderPreviews = function (parent, photos, title) {
     parent.textContent = '';
@@ -68,7 +66,6 @@
     }
   };
 
-
   var createFeatures = function (features) {
     return features.map(function (feature) {
       var item = document.createElement('li');
@@ -78,7 +75,6 @@
       return item;
     });
   };
-
 
   var createPreviews = function (photos, title) {
     var sorted = window.utils.getSortedList(photos);
@@ -111,7 +107,6 @@
     isShow = true;
   };
 
-
   var hide = function () {
     var card = document.querySelector('.map__card.popup');
 
@@ -124,16 +119,13 @@
     isShow = false;
   };
 
-
   var closeClickHandler = function () {
     hide();
   };
 
-
   var keydownHandler = function (evt) {
     window.utils.escKeyCheck(evt.keyCode, hide);
   };
-
 
   window.card = {
     hide: hide,
