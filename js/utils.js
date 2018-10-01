@@ -38,6 +38,13 @@
     }
   };
 
+  var StatusCode = {
+    SUCCESS: 200,
+    ERROR_REQUEST: 400,
+    ERROR_NOT_FOUND: 404,
+    ERROR_SERVER: 500
+  };
+
   var getRandomNumber = function (minNumber, maxNumber) {
     return Math.floor((Math.random() * (maxNumber - minNumber) + minNumber));
   };
@@ -71,6 +78,25 @@
     }
   };
 
+  var statusCodeCB = function (xhr, successCallback, errorCallback) {
+    switch (xhr.status) {
+      case StatusCode.SUCCESS:
+        successCallback(xhr.response);
+        break;
+      case StatusCode.ERROR_REQUEST:
+        errorCallback('Ошибка запроса');
+        break;
+      case StatusCode.ERROR_NOT_FOUND:
+        errorCallback('Не найдено');
+        break;
+      case StatusCode.ERROR_SERVER:
+        errorCallback('Внутренняя ошибка сервера');
+        break;
+      default:
+        errorCallback('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+    }
+  };
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     enterKeyCheck: enterKeyCheck,
@@ -80,6 +106,7 @@
     escKeyCheck: escKeyCheck,
     Position: Position,
     KeyCode: KeyCode,
-    Pin: Pin
+    Pin: Pin,
+    statusCodeCB: statusCodeCB
   };
 })();

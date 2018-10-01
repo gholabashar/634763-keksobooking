@@ -4,11 +4,19 @@
   var pin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
+  var pinLeftStart = parseInt(pin.style.left, 10);
+  var pinTopStart = parseInt(pin.style.top, 10);
+
   var getPinPosition = function () {
     var pinX = parseInt(pin.style.left, 10) - window.utils.Pin.GAP_X;
     var pinY = parseInt(pin.style.top, 10) - window.utils.Pin.GAP_Y;
 
     return [pinX, pinY].join(', ');
+  };
+
+  var resetPinPosition = function () {
+    pin.style.left = pinLeftStart + 'px';
+    pin.style.top = pinTopStart + 'px';
   };
 
   var pinMousedownHandler = function (evt) {
@@ -62,11 +70,27 @@
     map.classList.remove('map--faded');
   };
 
+  var hideMap = function () {
+    if (!map.classList.contains('map--faded')) {
+      map.classList.add('map--faded');
+    }
+  };
+
+  var removePins = function () {
+    var items = document.querySelectorAll('.map__pin');
+
+    items.forEach(function (item) {
+      if (item !== pin) {
+        item.remove();
+      }
+    });
+  };
+
   var setPageActive = function () {
     mapInit();
     window.form.init(getPinPosition());
     window.form.toggle(false);
-    window.pin.render(window.data.getData);
+    window.pin.render();
 
     pin.removeEventListener('mouseup', pinMouseupHandler);
     pin.removeEventListener('keydown', pinKeydownHandler);
@@ -92,7 +116,11 @@
 
   setPageDisabled();
 
-  window.main = {
-    getPinPosition: getPinPosition
+  window.map = {
+    getPinPosition: getPinPosition,
+    hideMap: hideMap,
+    removePins: removePins,
+    setPageDisabled: setPageDisabled,
+    resetPinPosition: resetPinPosition
   };
 })();

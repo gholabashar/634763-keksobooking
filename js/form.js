@@ -1,20 +1,24 @@
 'use strict';
 
 (function () {
-  var RESET_TIMEOUT = 50;
+  var RESET_TIMEOUT = 300;
   var Title = {
     MIN: 30,
     MAX: 100
   };
-  var Apartment = {
+  var Rooms = {
     MIN: 1,
-    MID: 3
+    MAX: 3
   };
-  var validityMessage = {
+  var ValidityMessage = {
     TITLE: 'Введите от 30 до 100 символов.',
-    PRICE: 'Укажите желаемую стоимость номера'
+    PRICE: 'Укажите стоимость проживания',
+    PRICE_MIN: 'Слишком низкая цена',
+    PRICE_MAX: 'Цена превышает допустимую',
+    IS_EMPTY: 'Краткое описание объявления',
+    REMOVE: ''
   };
-  var sizes = {
+  var size = {
     '1': ['для 1 гостя'],
     '2': ['для 1 гостя', 'для 2 гостей'],
     '3': ['для 1 гостя', 'для 2 гостей', 'для 3 гостей'],
@@ -38,7 +42,6 @@
 
   var setPrice = function () {
     var cost = window.utils.getHostTypes(type.value).minCost;
-
     price.min = cost;
     price.placeholder = cost;
   };
@@ -62,32 +65,38 @@
   };
 
   var titleInvalidHandler = function (evt) {
-    if (evt.target.value.length <= Title.MIN
-      || evt.target.value.length >= Title.MAX) {
-      title.setCustomValidity(validityMessage.TITLE);
+    if (title.validity.tooShort || title.validity.tooLong) {
+      title.setCustomValidity(ValidityMessage.TITLE +
+        ' Введено: ' + evt.target.value.length);
+    } else if (title.validity.valueMissing) {
+      title.setCustomValidity(ValidityMessage.IS_EMPTY);
     } else {
-      title.setCustomValidity('');
+      title.setCustomValidity(ValidityMessage.REMOVE);
     }
   };
 
   var priceInvalidHandler = function (evt) {
-    if (!evt.target.value) {
-      price.setCustomValidity(validityMessage.PRICE);
+    if (price.validity.valueMissing) {
+      price.setCustomValidity(ValidityMessage.PRICE);
+    } else if (price.validity.rangeUnderflow) {
+      price.setCustomValidity(ValidityMessage.PRICE_MIN);
+    } else if (price.validity.rangeOverflow) {
+      price.setCustomValidity(ValidityMessage.PRICE_MAX);
     } else {
-      price.setCustomValidity('');
+      price.setCustomValidity(ValidityMessage.REMOVE);
     }
   };
 
   var renderPlaces = function (isReset) {
     var space = room.value;
-    var area = isReset ? Apartment.MIN : space;
-    var places = sizes[area];
+    var area = isReset ? Rooms.MIN : space;
+    var places = size[area];
     capacity.textContent = '';
 
     places.forEach(function (place, i) {
       var option = document.createElement('option');
       option.textContent = place;
-      option.value = (+space > Apartment.MID) ? 0 : i + 1;
+      option.value = (parseInt(space) > Rooms.MAX) ? 0 : i + 1;
       capacity.appendChild(option);
     });
   };
@@ -96,12 +105,12 @@
     renderPlaces(false);
   };
 
-  var resetClickHandler = function () {
-    var updateValues = function () {
-      setPrice();
-      setAdress(window.main.getPinPosition());
-    };
+  var updateValues = function () {
+    setPrice();
+    setAdress(window.map.getPinPosition());
+  };
 
+  var resetClickHandler = function () {
     renderPlaces(true);
     setTimeout(updateValues, RESET_TIMEOUT);
   };
@@ -112,9 +121,7 @@
     update();
   };
 
-  var init = function (position) {
-    setAdress(position);
-
+  var addHandlers = function () {
     times.forEach(function (select) {
       select.addEventListener('change', timeChangeHandler);
     });
@@ -123,11 +130,107 @@
     type.addEventListener('change', typeChangeHandler);
     title.addEventListener('invalid', titleInvalidHandler);
     price.addEventListener('invalid', priceInvalidHandler);
+    reset.addEventListener('click', resetClickHandler);
+    form.addEventListener('submit', formSubmitHandler);
+  };
 
+  var removeHandlers = function () {
+    times.forEach(function (select) {
+      select.removeEventListener('change', timeChangeHandler);
+    });
+
+    room.removeEventListener('change', roomChangeHandler);
+    type.removeEventListener('change', typeChangeHandler);
+    title.removeEventListener('invalid', titleInvalidHandler);
+    price.removeEventListener('invalid', priceInvalidHandler);
+    reset.removeEventListener('click', resetClickHandler);
+    form.removeEventListener('submit', formSubmitHandler);
+  };
+
+  var init = function (position) {
+    setAdress(position);
     setPrice();
     update();
 
+    addHandlers();
+
     form.classList.remove('ad-form--disabled');
+  };
+
+  var keydownHandler = function (evt) {
+    window.utils.escKeyCheck(evt.keyCode, hideMessage);
+  };
+
+  var clickHandler = function () {
+    hideMessage();
+  };
+
+  var hideMessage = function () {
+    var dialog = document.querySelector('.success');
+
+    dialog.remove();
+    document.removeEventListener('keydown', keydownHandler);
+    document.removeEventListener('click', clickHandler);
+  };
+
+  var showMessage = function () {
+    var template = document.querySelector('#success')
+      .content.cloneNode(true);
+    var main = document.body.querySelector('main');
+
+    main.appendChild(template);
+
+    document.addEventListener('keydown', keydownHandler);
+    document.addEventListener('click', clickHandler);
+  };
+
+  var setSuccess = function () {
+    form.reset();
+    form.classList.add('ad-form--disabled');
+    updateValues();
+
+    removeHandlers();
+
+    window.map.hideMap();
+    window.map.setPageDisabled();
+    window.map.resetPinPosition();
+    window.map.removePins();
+    window.card.hide();
+
+    showMessage();
+  };
+
+  var errorKeydownHandler = function (evt) {
+    window.utils.escKeyCheck(evt.keyCode, hideError);
+  };
+
+  var errorClickHandler = function () {
+    hideError();
+  };
+
+  var showError = function () {
+    var template = document.querySelector('#error')
+      .content.cloneNode(true);
+    var main = document.body.querySelector('main');
+
+    main.appendChild(template);
+
+    document.addEventListener('keydown', errorKeydownHandler);
+    document.addEventListener('click', errorClickHandler);
+  };
+
+  var hideError = function () {
+    var dialog = document.querySelector('.error');
+
+    dialog.remove();
+
+    document.removeEventListener('keydown', keydownHandler);
+    document.removeEventListener('click', clickHandler);
+  };
+
+  var formSubmitHandler = function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(form), setSuccess, showError);
   };
 
   window.form = {
@@ -135,4 +238,5 @@
     toggle: toggle,
     init: init
   };
+  
 })();
