@@ -46,7 +46,7 @@
 
     window.backend.load(show, setError);
   };
-  
+
   window.pin = {
     render: render
   };

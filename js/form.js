@@ -93,7 +93,7 @@
     places.forEach(function (place, i) {
       var option = document.createElement('option');
       option.textContent = place;
-      option.value = (parseInt(space) > Rooms.MAX) ? 0 : i + 1;
+      option.value = (parseInt(space, 10) > Rooms.MAX) ? 0 : i + 1;
       capacity.appendChild(option);
     });
   };
