@@ -2,10 +2,7 @@
 
 (function () {
   var RESET_TIMEOUT = 300;
-  var Title = {
-    MIN: 30,
-    MAX: 100
-  };
+
   var Rooms = {
     MIN: 1,
     MAX: 3
@@ -15,7 +12,7 @@
     PRICE: 'Укажите стоимость проживания',
     PRICE_MIN: 'Слишком низкая цена',
     PRICE_MAX: 'Цена превышает допустимую',
-    IS_EMPTY: 'Краткое описание объявления',
+    IS_EMPTY: 'Укажите описание объявления',
     REMOVE: ''
   };
   var size = {
@@ -41,7 +38,7 @@
   };
 
   var setPrice = function () {
-    var cost = window.utils.getHostTypes(type.value).minCost;
+    var cost = window.utils.getHostType(type.value).minCost;
     price.min = cost;
     price.placeholder = cost;
   };
@@ -52,11 +49,11 @@
     });
   };
 
-  var typeChangeHandler = function () {
+  var onTypeChange = function () {
     setPrice();
   };
 
-  var timeChangeHandler = function (evt) {
+  var onTimeChange = function (evt) {
     times.forEach(function (time) {
       if (evt.target.value !== time.value) {
         time.value = evt.target.value;
@@ -64,7 +61,7 @@
     });
   };
 
-  var titleInvalidHandler = function (evt) {
+  var onTitleInvalid = function (evt) {
     if (title.validity.tooShort || title.validity.tooLong) {
       title.setCustomValidity(ValidityMessage.TITLE +
         ' Введено: ' + evt.target.value.length);
@@ -75,7 +72,7 @@
     }
   };
 
-  var priceInvalidHandler = function (evt) {
+  var onPriceInvalid = function () {
     if (price.validity.valueMissing) {
       price.setCustomValidity(ValidityMessage.PRICE);
     } else if (price.validity.rangeUnderflow) {
@@ -110,41 +107,40 @@
     setAdress(window.map.getPinPosition());
   };
 
-  var resetClickHandler = function () {
+  var onResetClick = function () {
     renderPlaces(true);
     setTimeout(updateValues, RESET_TIMEOUT);
   };
 
-  reset.addEventListener('click', resetClickHandler);
+  reset.addEventListener('click', onResetClick);
 
-  var roomChangeHandler = function () {
+  var onRoomChange = function () {
     update();
   };
 
   var addHandlers = function () {
     times.forEach(function (select) {
-      select.addEventListener('change', timeChangeHandler);
+      select.addEventListener('change', onTimeChange);
     });
 
-    room.addEventListener('change', roomChangeHandler);
-    type.addEventListener('change', typeChangeHandler);
-    title.addEventListener('invalid', titleInvalidHandler);
-    price.addEventListener('invalid', priceInvalidHandler);
-    reset.addEventListener('click', resetClickHandler);
-    form.addEventListener('submit', formSubmitHandler);
+    room.addEventListener('change', onRoomChange);
+    type.addEventListener('change', onTypeChange);
+    title.addEventListener('invalid', onTitleInvalid);
+    price.addEventListener('invalid', onPriceInvalid);
+    reset.addEventListener('click', onResetClick);
+    form.addEventListener('submit', onFormSubmit);
   };
 
   var removeHandlers = function () {
     times.forEach(function (select) {
-      select.removeEventListener('change', timeChangeHandler);
+      select.removeEventListener('change', onTimeChange);
     });
-
-    room.removeEventListener('change', roomChangeHandler);
-    type.removeEventListener('change', typeChangeHandler);
-    title.removeEventListener('invalid', titleInvalidHandler);
-    price.removeEventListener('invalid', priceInvalidHandler);
-    reset.removeEventListener('click', resetClickHandler);
-    form.removeEventListener('submit', formSubmitHandler);
+    room.removeEventListener('change', onRoomChange);
+    type.removeEventListener('change', onTypeChange);
+    title.removeEventListener('invalid', onTitleInvalid);
+    price.removeEventListener('invalid', onPriceInvalid);
+    reset.removeEventListener('click', onResetClick);
+    form.removeEventListener('submit', onFormSubmit);
   };
 
   var init = function (position) {
@@ -157,11 +153,11 @@
     form.classList.remove('ad-form--disabled');
   };
 
-  var keydownHandler = function (evt) {
+  var onKeydown = function (evt) {
     window.utils.escKeyCheck(evt.keyCode, hideMessage);
   };
 
-  var clickHandler = function () {
+  var onClick = function () {
     hideMessage();
   };
 
@@ -169,19 +165,17 @@
     var dialog = document.querySelector('.success');
 
     dialog.remove();
-    document.removeEventListener('keydown', keydownHandler);
-    document.removeEventListener('click', clickHandler);
+    document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('click', onClick);
   };
 
   var showMessage = function () {
-    var template = document.querySelector('#success')
-      .content.cloneNode(true);
+    var template = document.querySelector('#success').content.cloneNode(true);
     var main = document.body.querySelector('main');
 
     main.appendChild(template);
-
-    document.addEventListener('keydown', keydownHandler);
-    document.addEventListener('click', clickHandler);
+    document.addEventListener('keydown', onKeydown);
+    document.addEventListener('click', onClick);
   };
 
   var setSuccess = function () {
@@ -200,23 +194,22 @@
     showMessage();
   };
 
-  var errorKeydownHandler = function (evt) {
+  var onErrorKeydown = function (evt) {
     window.utils.escKeyCheck(evt.keyCode, hideError);
   };
 
-  var errorClickHandler = function () {
+  var onErrorClick = function () {
     hideError();
   };
 
   var showError = function () {
-    var template = document.querySelector('#error')
-      .content.cloneNode(true);
+    var template = document.querySelector('#error').content.cloneNode(true);
     var main = document.body.querySelector('main');
 
     main.appendChild(template);
 
-    document.addEventListener('keydown', errorKeydownHandler);
-    document.addEventListener('click', errorClickHandler);
+    document.addEventListener('keydown', onErrorKeydown);
+    document.addEventListener('click', onErrorClick);
   };
 
   var hideError = function () {
@@ -224,11 +217,11 @@
 
     dialog.remove();
 
-    document.removeEventListener('keydown', keydownHandler);
-    document.removeEventListener('click', clickHandler);
+    document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('click', onClick);
   };
 
-  var formSubmitHandler = function (evt) {
+  var onFormSubmit = function (evt) {
     evt.preventDefault();
     window.backend.send(new FormData(form), setSuccess, showError);
   };
@@ -238,5 +231,5 @@
     toggle: toggle,
     init: init
   };
-  
+
 })();

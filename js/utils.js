@@ -19,7 +19,7 @@
     MAX: 630
   };
 
-  var hostTypes = {
+  var HostType = {
     'bungalo': {
       headerText: 'Бунгало',
       minCost: 0
@@ -45,8 +45,8 @@
     ERROR_SERVER: 500
   };
 
-  var getRandomNumber = function (minNumber, maxNumber) {
-    return Math.floor((Math.random() * (maxNumber - minNumber) + minNumber));
+  var getRandomNumber = function (min, max) {
+    return Math.floor((Math.random() * (max - min) + min));
   };
 
   var getRandomItem = function (array) {
@@ -62,8 +62,8 @@
     return list;
   };
 
-  var getHostTypes = function (type) {
-    return hostTypes[type];
+  var getHostType = function (type) {
+    return HostType[type];
   };
 
   var escKeyCheck = function (keyCode, callback) {
@@ -102,7 +102,7 @@
     enterKeyCheck: enterKeyCheck,
     getRandomItem: getRandomItem,
     getSortedList: getSortedList,
-    getHostTypes: getHostTypes,
+    getHostType: getHostType,
     escKeyCheck: escKeyCheck,
     Position: Position,
     KeyCode: KeyCode,

@@ -46,9 +46,7 @@
       var avatarIndex = i + 1;
 
       hosts.push({
-        author: {
-          avatar: 'img/avatars/user0' + avatarIndex + '.png'
-        },
+        author: {avatar: 'img/avatars/user0' + avatarIndex + '.png'},
         offer: {
           title: HEADINGS[i],
           address: [hostX, hostY].join(', '),

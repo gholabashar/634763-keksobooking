@@ -19,13 +19,13 @@
     pin.style.top = pinTopStart + 'px';
   };
 
-  var pinMousedownHandler = function (evt) {
+  var onPinMousedown = function (evt) {
     var startPoints = {
       x: evt.clientX,
       y: evt.clientY
     };
 
-    var pinMousemoveHandler = function (moveEvt) {
+    var onPinMousemove = function (moveEvt) {
       moveEvt.preventDefault();
 
       var currentPoints = {
@@ -55,15 +55,15 @@
       }
     };
 
-    var pinMouseupHandler = function (upEvt) {
+    var onPinMouseup = function (upEvt) {
       upEvt.preventDefault();
-      document.removeEventListener('mousemove', pinMousemoveHandler);
-      document.removeEventListener('mouseup', pinMouseupHandler);
+      document.removeEventListener('mousemove', onPinMousemove);
+      document.removeEventListener('mouseup', onPinMouseup);
       window.form.setAdress(getPinPosition());
     };
 
-    document.addEventListener('mousemove', pinMousemoveHandler);
-    document.addEventListener('mouseup', pinMouseupHandler);
+    document.addEventListener('mousemove', onPinMousemove);
+    document.addEventListener('mouseup', onPinMouseup);
   };
 
   var mapInit = function () {
@@ -92,25 +92,25 @@
     window.form.toggle(false);
     window.pin.render();
 
-    pin.removeEventListener('mouseup', pinMouseupHandler);
-    pin.removeEventListener('keydown', pinKeydownHandler);
+    pin.removeEventListener('mouseup', onPinMouseup);
+    pin.removeEventListener('keydown', onPinKeydown);
   };
 
   var setPageDisabled = function () {
     window.form.toggle(true);
     window.form.setAdress(getPinPosition());
-    pin.addEventListener('mousedown', pinMousedownHandler);
-    pin.addEventListener('mouseup', pinMouseupHandler);
-    pin.addEventListener('keydown', pinKeydownHandler);
+    pin.addEventListener('mousedown', onPinMousedown);
+    pin.addEventListener('mouseup', onPinMouseup);
+    pin.addEventListener('keydown', onPinKeydown);
     pin.tabIndex = 0;
   };
 
-  var pinMouseupHandler = function () {
+  var onPinMouseup = function () {
     setPageActive();
-    pin.removeEventListener('mouseup', pinMouseupHandler);
+    pin.removeEventListener('mouseup', onPinMouseup);
   };
 
-  var pinKeydownHandler = function (evt) {
+  var onPinKeydown = function (evt) {
     window.utils.enterKeyCheck(evt.keyCode, setPageActive);
   };
 
