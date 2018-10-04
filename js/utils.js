@@ -19,7 +19,7 @@
     MAX: 630
   };
 
-  var hostTypes = {
+  var HostType = {
     'bungalo': {
       headerText: 'Бунгало',
       minCost: 0
@@ -38,8 +38,15 @@
     }
   };
 
-  var getRandomNumber = function (minNumber, maxNumber) {
-    return Math.floor((Math.random() * (maxNumber - minNumber) + minNumber));
+  var StatusCode = {
+    SUCCESS: 200,
+    ERROR_REQUEST: 400,
+    ERROR_NOT_FOUND: 404,
+    ERROR_SERVER: 500
+  };
+
+  var getRandomNumber = function (min, max) {
+    return Math.floor((Math.random() * (max - min) + min));
   };
 
   var getRandomItem = function (array) {
@@ -55,8 +62,8 @@
     return list;
   };
 
-  var getHostTypes = function (type) {
-    return hostTypes[type];
+  var getHostType = function (type) {
+    return HostType[type];
   };
 
   var escKeyCheck = function (keyCode, callback) {
@@ -71,15 +78,35 @@
     }
   };
 
+  var statusCodeCB = function (xhr, successCallback, errorCallback) {
+    switch (xhr.status) {
+      case StatusCode.SUCCESS:
+        successCallback(xhr.response);
+        break;
+      case StatusCode.ERROR_REQUEST:
+        errorCallback('Ошибка запроса');
+        break;
+      case StatusCode.ERROR_NOT_FOUND:
+        errorCallback('Не найдено');
+        break;
+      case StatusCode.ERROR_SERVER:
+        errorCallback('Внутренняя ошибка сервера');
+        break;
+      default:
+        errorCallback('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+    }
+  };
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     enterKeyCheck: enterKeyCheck,
     getRandomItem: getRandomItem,
     getSortedList: getSortedList,
-    getHostTypes: getHostTypes,
+    getHostType: getHostType,
     escKeyCheck: escKeyCheck,
     Position: Position,
     KeyCode: KeyCode,
-    Pin: Pin
+    Pin: Pin,
+    statusCodeCB: statusCodeCB
   };
 })();

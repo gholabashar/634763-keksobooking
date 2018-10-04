@@ -18,30 +18,37 @@
     return item;
   };
 
-  var pinClickHandler = function (evt, i) {
-    var selected = document.querySelector('.map__pin--active');
-    var host = window.data.getDataItem(i);
+  var render = function () {
 
-    window.card.open(host);
+    var show = function (hosts) {
+      hosts.forEach(function (host, i) {
+        var pin = create(host);
 
-    if (selected) {
-      selected.classList.remove('map__pin--active');
-    }
-    evt.currentTarget.classList.add('map__pin--active');
-  };
+        pin.addEventListener('click', function (evt) {
+          var selected = document.querySelector('.map__pin--active');
 
-  var render = function (hosts) {
-    hosts.forEach(function (host, i) {
-      var pin = create(host);
+          window.card.open(hosts[i]);
 
-      pin.addEventListener('click', function (evt) {
-        pinClickHandler(evt, i);
+          if (selected) {
+            selected.classList.remove('map__pin--active');
+          }
+
+          evt.currentTarget.classList.add('map__pin--active');
+        });
+
+        list.appendChild(pin);
       });
-      list.appendChild(pin);
-    });
+    };
+
+    var setError = function (error) {
+      return error;
+    };
+
+    window.backend.load(show, setError);
   };
 
   window.pin = {
     render: render
   };
+
 })();

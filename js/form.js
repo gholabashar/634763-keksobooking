@@ -1,20 +1,21 @@
 'use strict';
 
 (function () {
-  var RESET_TIMEOUT = 50;
-  var Title = {
-    MIN: 30,
-    MAX: 100
-  };
-  var Apartment = {
+  var RESET_TIMEOUT = 300;
+
+  var Rooms = {
     MIN: 1,
-    MID: 3
+    MAX: 3
   };
-  var validityMessage = {
+  var ValidityMessage = {
     TITLE: 'Введите от 30 до 100 символов.',
-    PRICE: 'Укажите желаемую стоимость номера'
+    PRICE: 'Укажите стоимость проживания',
+    PRICE_MIN: 'Слишком низкая цена',
+    PRICE_MAX: 'Цена превышает допустимую',
+    IS_EMPTY: 'Укажите описание объявления',
+    REMOVE: ''
   };
-  var sizes = {
+  var size = {
     '1': ['для 1 гостя'],
     '2': ['для 1 гостя', 'для 2 гостей'],
     '3': ['для 1 гостя', 'для 2 гостей', 'для 3 гостей'],
@@ -37,8 +38,7 @@
   };
 
   var setPrice = function () {
-    var cost = window.utils.getHostTypes(type.value).minCost;
-
+    var cost = window.utils.getHostType(type.value).minCost;
     price.min = cost;
     price.placeholder = cost;
   };
@@ -49,11 +49,11 @@
     });
   };
 
-  var typeChangeHandler = function () {
+  var onTypeChange = function () {
     setPrice();
   };
 
-  var timeChangeHandler = function (evt) {
+  var onTimeChange = function (evt) {
     times.forEach(function (time) {
       if (evt.target.value !== time.value) {
         time.value = evt.target.value;
@@ -61,33 +61,39 @@
     });
   };
 
-  var titleInvalidHandler = function (evt) {
-    if (evt.target.value.length <= Title.MIN
-      || evt.target.value.length >= Title.MAX) {
-      title.setCustomValidity(validityMessage.TITLE);
+  var onTitleInvalid = function (evt) {
+    if (title.validity.tooShort || title.validity.tooLong) {
+      title.setCustomValidity(ValidityMessage.TITLE +
+        ' Введено: ' + evt.target.value.length);
+    } else if (title.validity.valueMissing) {
+      title.setCustomValidity(ValidityMessage.IS_EMPTY);
     } else {
-      title.setCustomValidity('');
+      title.setCustomValidity(ValidityMessage.REMOVE);
     }
   };
 
-  var priceInvalidHandler = function (evt) {
-    if (!evt.target.value) {
-      price.setCustomValidity(validityMessage.PRICE);
+  var onPriceInvalid = function () {
+    if (price.validity.valueMissing) {
+      price.setCustomValidity(ValidityMessage.PRICE);
+    } else if (price.validity.rangeUnderflow) {
+      price.setCustomValidity(ValidityMessage.PRICE_MIN);
+    } else if (price.validity.rangeOverflow) {
+      price.setCustomValidity(ValidityMessage.PRICE_MAX);
     } else {
-      price.setCustomValidity('');
+      price.setCustomValidity(ValidityMessage.REMOVE);
     }
   };
 
   var renderPlaces = function (isReset) {
     var space = room.value;
-    var area = isReset ? Apartment.MIN : space;
-    var places = sizes[area];
+    var area = isReset ? Rooms.MIN : space;
+    var places = size[area];
     capacity.textContent = '';
 
     places.forEach(function (place, i) {
       var option = document.createElement('option');
       option.textContent = place;
-      option.value = (+space > Apartment.MID) ? 0 : i + 1;
+      option.value = (parseInt(space, 10) > Rooms.MAX) ? 0 : i + 1;
       capacity.appendChild(option);
     });
   };
@@ -96,38 +102,128 @@
     renderPlaces(false);
   };
 
-  var resetClickHandler = function () {
-    var updateValues = function () {
-      setPrice();
-      setAdress(window.main.getPinPosition());
-    };
+  var updateValues = function () {
+    setPrice();
+    setAdress(window.map.getPinPosition());
+  };
 
+  var onResetClick = function () {
     renderPlaces(true);
     setTimeout(updateValues, RESET_TIMEOUT);
   };
 
-  reset.addEventListener('click', resetClickHandler);
+  reset.addEventListener('click', onResetClick);
 
-  var roomChangeHandler = function () {
+  var onRoomChange = function () {
     update();
+  };
+
+  var addHandlers = function () {
+    times.forEach(function (select) {
+      select.addEventListener('change', onTimeChange);
+    });
+
+    room.addEventListener('change', onRoomChange);
+    type.addEventListener('change', onTypeChange);
+    title.addEventListener('invalid', onTitleInvalid);
+    price.addEventListener('invalid', onPriceInvalid);
+    reset.addEventListener('click', onResetClick);
+    form.addEventListener('submit', onFormSubmit);
+  };
+
+  var removeHandlers = function () {
+    times.forEach(function (select) {
+      select.removeEventListener('change', onTimeChange);
+    });
+    room.removeEventListener('change', onRoomChange);
+    type.removeEventListener('change', onTypeChange);
+    title.removeEventListener('invalid', onTitleInvalid);
+    price.removeEventListener('invalid', onPriceInvalid);
+    reset.removeEventListener('click', onResetClick);
+    form.removeEventListener('submit', onFormSubmit);
   };
 
   var init = function (position) {
     setAdress(position);
-
-    times.forEach(function (select) {
-      select.addEventListener('change', timeChangeHandler);
-    });
-
-    room.addEventListener('change', roomChangeHandler);
-    type.addEventListener('change', typeChangeHandler);
-    title.addEventListener('invalid', titleInvalidHandler);
-    price.addEventListener('invalid', priceInvalidHandler);
-
     setPrice();
     update();
 
+    addHandlers();
+
     form.classList.remove('ad-form--disabled');
+  };
+
+  var onKeydown = function (evt) {
+    window.utils.escKeyCheck(evt.keyCode, hideMessage);
+  };
+
+  var onClick = function () {
+    hideMessage();
+  };
+
+  var hideMessage = function () {
+    var dialog = document.querySelector('.success');
+
+    dialog.remove();
+    document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('click', onClick);
+  };
+
+  var showMessage = function () {
+    var template = document.querySelector('#success').content.cloneNode(true);
+    var main = document.body.querySelector('main');
+
+    main.appendChild(template);
+    document.addEventListener('keydown', onKeydown);
+    document.addEventListener('click', onClick);
+  };
+
+  var setSuccess = function () {
+    form.reset();
+    form.classList.add('ad-form--disabled');
+    updateValues();
+
+    removeHandlers();
+
+    window.map.hideMap();
+    window.map.setPageDisabled();
+    window.map.resetPinPosition();
+    window.map.removePins();
+    window.card.hide();
+
+    showMessage();
+  };
+
+  var onErrorKeydown = function (evt) {
+    window.utils.escKeyCheck(evt.keyCode, hideError);
+  };
+
+  var onErrorClick = function () {
+    hideError();
+  };
+
+  var showError = function () {
+    var template = document.querySelector('#error').content.cloneNode(true);
+    var main = document.body.querySelector('main');
+
+    main.appendChild(template);
+
+    document.addEventListener('keydown', onErrorKeydown);
+    document.addEventListener('click', onErrorClick);
+  };
+
+  var hideError = function () {
+    var dialog = document.querySelector('.error');
+
+    dialog.remove();
+
+    document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('click', onClick);
+  };
+
+  var onFormSubmit = function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(form), setSuccess, showError);
   };
 
   window.form = {
@@ -135,4 +231,5 @@
     toggle: toggle,
     init: init
   };
+
 })();
