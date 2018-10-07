@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
   var KeyCode = {
     ENTER: 13,
     ESC: 27
@@ -97,6 +98,19 @@
     }
   };
 
+  var setDebounce = function (fun) {
+    var lastTimeout = null;
+
+    return function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        fun();
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     enterKeyCheck: enterKeyCheck,
@@ -107,6 +121,7 @@
     Position: Position,
     KeyCode: KeyCode,
     Pin: Pin,
-    statusCodeCB: statusCodeCB
+    statusCodeCB: statusCodeCB,
+    setDebounce: setDebounce
   };
 })();
