@@ -4,6 +4,12 @@
   var pin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
+  var mapFilter = map.querySelector('.map__filters');
+  var filters = mapFilter.querySelectorAll('select, fieldset');
+  var fields = document.querySelectorAll('.ad-form fieldset');
+  var MAX_PINS = 5;
+  var items = [];
+
   var pinLeftStart = parseInt(pin.style.left, 10);
   var pinTopStart = parseInt(pin.style.top, 10);
 
@@ -77,32 +83,51 @@
   };
 
   var removePins = function () {
-    var items = document.querySelectorAll('.map__pin');
+    var pins = document.querySelectorAll('.map__pin');
 
-    items.forEach(function (item) {
+    pins.forEach(function (item) {
       if (item !== pin) {
         item.remove();
       }
     });
   };
 
+  var getItems = function (hosts) {
+    items = hosts;
+    window.pin.render(items.slice(0, MAX_PINS));
+  };
+
+  var setError = function (error) {
+    return error;
+  };
+
+  var showPins = function () {
+    window.backend.load(getItems, setError);
+  };
+
   var setPageActive = function () {
     mapInit();
+    showPins();
+
     window.form.init(getPinPosition());
-    window.form.toggle(false);
-    window.pin.render();
+    window.form.toggle(filters, false);
+    window.form.toggle(fields, false);
 
     pin.removeEventListener('mouseup', onPinMouseup);
     pin.removeEventListener('keydown', onPinKeydown);
+    mapFilter.addEventListener('change', onFilterChange);
   };
 
   var setPageDisabled = function () {
-    window.form.toggle(true);
+    window.form.toggle(filters, true);
+    window.form.toggle(fields, true);
+
     window.form.setAdress(getPinPosition());
     pin.addEventListener('mousedown', onPinMousedown);
     pin.addEventListener('mouseup', onPinMouseup);
     pin.addEventListener('keydown', onPinKeydown);
     pin.tabIndex = 0;
+    mapFilter.removeEventListener('change', onFilterChange);
   };
 
   var onPinMouseup = function () {
@@ -113,6 +138,15 @@
   var onPinKeydown = function (evt) {
     window.utils.enterKeyCheck(evt.keyCode, setPageActive);
   };
+
+  var onFilterChange = window.utils.setDebounce(function () {
+    var results = window.filter.getFiltered(items);
+
+    window.card.hide();
+    removePins();
+
+    window.pin.render(results.slice(0, MAX_PINS));
+  });
 
   setPageDisabled();
 

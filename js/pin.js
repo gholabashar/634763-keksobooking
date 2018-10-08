@@ -18,33 +18,24 @@
     return item;
   };
 
-  var render = function () {
+  var render = function (hosts) {
+    hosts.forEach(function (host, i) {
+      var pin = create(host);
 
-    var show = function (hosts) {
-      hosts.forEach(function (host, i) {
-        var pin = create(host);
+      pin.addEventListener('click', function (evt) {
+        var selected = document.querySelector('.map__pin--active');
 
-        pin.addEventListener('click', function (evt) {
-          var selected = document.querySelector('.map__pin--active');
+        window.card.open(hosts[i]);
 
-          window.card.open(hosts[i]);
+        if (selected) {
+          selected.classList.remove('map__pin--active');
+        }
 
-          if (selected) {
-            selected.classList.remove('map__pin--active');
-          }
-
-          evt.currentTarget.classList.add('map__pin--active');
-        });
-
-        list.appendChild(pin);
+        evt.currentTarget.classList.add('map__pin--active');
       });
-    };
 
-    var setError = function (error) {
-      return error;
-    };
-
-    window.backend.load(show, setError);
+      list.appendChild(pin);
+    });
   };
 
   window.pin = {

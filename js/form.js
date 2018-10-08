@@ -30,7 +30,6 @@
   var room = form.querySelector('#room_number');
   var capacity = form.querySelector('#capacity');
   var reset = form.querySelector('.ad-form__reset');
-  var fields = form.querySelectorAll('fieldset');
   var times = form.querySelectorAll('.ad-form__element--time select');
 
   var setAdress = function (position) {
@@ -43,7 +42,7 @@
     price.placeholder = cost;
   };
 
-  var toggle = function (isDisabled) {
+  var toggle = function (fields, isDisabled) {
     fields.forEach(function (field) {
       field.disabled = isDisabled;
     });
