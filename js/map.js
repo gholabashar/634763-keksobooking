@@ -108,6 +108,7 @@
   var setPageActive = function () {
     mapInit();
     showPins();
+    window.upload.setActived();
 
     window.form.init(getPinPosition());
     window.form.toggle(filters, false);
@@ -121,7 +122,7 @@
   var setPageDisabled = function () {
     window.form.toggle(filters, true);
     window.form.toggle(fields, true);
-
+    window.upload.setDisabled();
     window.form.setAdress(getPinPosition());
     pin.addEventListener('mousedown', onPinMousedown);
     pin.addEventListener('mouseup', onPinMouseup);

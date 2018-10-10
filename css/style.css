@@ -58,6 +58,24 @@
   overflow: hidden;
 }
 
+.ad-form__field, .ad-form__upload {
+  position: relative;
+}
+
+input[type="file"] {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+input[type="file"]:hover {
+  cursor:pointer;
+}
+
 .hidden {
   display: none;
 }
@@ -773,7 +791,8 @@ fieldset {
 }
 
 .ad-form__upload .ad-form__input {
-  width: auto;
+  width: 100%;
+  height: 100%;
 }
 
 .ad-form__upload:last-of-type {
