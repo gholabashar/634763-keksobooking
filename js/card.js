@@ -32,13 +32,15 @@
 
   var renderFeatures = function (parent, features) {
     parent.textContent = '';
+    var fragment = document.createDocumentFragment();
 
     if (features.length > 0) {
       var items = createFeatures(features);
 
       items.forEach(function (item) {
-        parent.appendChild(item);
+        fragment.appendChild(item);
       });
+      parent.appendChild(fragment);
     } else {
       parent.style.display = 'none';
     }
@@ -46,13 +48,15 @@
 
   var renderPreviews = function (parent, photos, title) {
     parent.textContent = '';
+    var fragment = document.createDocumentFragment();
 
     if (photos.length > 0) {
       var previews = createPreviews(photos, title);
 
       previews.forEach(function (preview) {
-        parent.appendChild(preview);
+        fragment.appendChild(preview);
       });
+      parent.appendChild(fragment);
     } else {
       parent.style.display = 'none';
     }

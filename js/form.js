@@ -84,6 +84,7 @@
   };
 
   var renderPlaces = function (isReset) {
+    var fragment = document.createDocumentFragment();
     var space = room.value;
     var area = isReset ? Rooms.MIN : space;
     var places = size[area];
@@ -93,8 +94,9 @@
       var option = document.createElement('option');
       option.textContent = place;
       option.value = (parseInt(space, 10) > Rooms.MAX) ? 0 : i + 1;
-      capacity.appendChild(option);
+      fragment.appendChild(option);
     });
+    capacity.appendChild(fragment);
   };
 
   var update = function () {
