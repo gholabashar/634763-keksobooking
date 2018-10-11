@@ -119,7 +119,7 @@
 
   var onResetClick = function () {
     resetAllData();
-    // renderPlaces(true);
+    renderPlaces(true);
     setTimeout(updateValues, RESET_TIMEOUT);
   };
 
@@ -190,7 +190,7 @@
   };
 
   var setSuccess = function () {
-    form.reset();
+
     setTimeout(updateValues, RESET_TIMEOUT);
     resetAllData();
     showMessage();
