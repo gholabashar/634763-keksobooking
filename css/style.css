@@ -133,7 +133,7 @@ fieldset {
   height: 750px;
 
   background-color: #82bcc0;
-  background-image: url("../img/map.jpg");
+  background-image: url("../img/map.jpg"); /* or map2.jpg with new utils.js */
   background-repeat: no-repeat;
   background-position: center bottom;
 

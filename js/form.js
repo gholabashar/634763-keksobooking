@@ -84,6 +84,7 @@
   };
 
   var renderPlaces = function (isReset) {
+    var fragment = document.createDocumentFragment();
     var space = room.value;
     var area = isReset ? Rooms.MIN : space;
     var places = size[area];
@@ -93,8 +94,9 @@
       var option = document.createElement('option');
       option.textContent = place;
       option.value = (parseInt(space, 10) > Rooms.MAX) ? 0 : i + 1;
-      capacity.appendChild(option);
+      fragment.appendChild(option);
     });
+    capacity.appendChild(fragment);
   };
 
   var update = function () {
@@ -106,7 +108,19 @@
     setAdress(window.map.getPinPosition());
   };
 
+  var resetAllData = function () {
+    form.reset();
+    form.classList.add('ad-form--disabled');
+    removeHandlers();
+    window.map.hide();
+    window.map.setPageDisabled();
+    window.map.resetPinPosition();
+    window.map.removePins();
+    window.card.hide();
+  };
+
   var onResetClick = function () {
+    resetAllData();
     renderPlaces(true);
     setTimeout(updateValues, RESET_TIMEOUT);
   };
@@ -146,7 +160,7 @@
     setAdress(position);
     setPrice();
     update();
-
+    address.setAttribute('disabled', 'disabled');
     addHandlers();
 
     form.classList.remove('ad-form--disabled');
@@ -178,18 +192,9 @@
   };
 
   var setSuccess = function () {
-    form.reset();
-    form.classList.add('ad-form--disabled');
-    updateValues();
 
-    removeHandlers();
-
-    window.map.hideMap();
-    window.map.setPageDisabled();
-    window.map.resetPinPosition();
-    window.map.removePins();
-    window.card.hide();
-
+    setTimeout(updateValues, RESET_TIMEOUT);
+    resetAllData();
     showMessage();
   };
 

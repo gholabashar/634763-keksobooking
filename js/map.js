@@ -1,14 +1,15 @@
 'use strict';
 
 (function () {
+  var MAX_PINS = 5;
+  var items = [];
+
   var pin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
   var mapFilter = map.querySelector('.map__filters');
   var filters = mapFilter.querySelectorAll('select, fieldset');
   var fields = document.querySelectorAll('.ad-form fieldset');
-  var MAX_PINS = 5;
-  var items = [];
 
   var pinLeftStart = parseInt(pin.style.left, 10);
   var pinTopStart = parseInt(pin.style.top, 10);
@@ -76,7 +77,7 @@
     map.classList.remove('map--faded');
   };
 
-  var hideMap = function () {
+  var hide = function () {
     if (!map.classList.contains('map--faded')) {
       map.classList.add('map--faded');
     }
@@ -153,7 +154,7 @@
 
   window.map = {
     getPinPosition: getPinPosition,
-    hideMap: hideMap,
+    hide: hide,
     removePins: removePins,
     setPageDisabled: setPageDisabled,
     resetPinPosition: resetPinPosition

@@ -17,8 +17,12 @@
 
     return item;
   };
-
+  /*
+  var fragment = document.createDocumentFragment();
+  */
   var render = function (hosts) {
+    var fragment = document.createDocumentFragment();
+
     hosts.forEach(function (host, i) {
       var pin = create(host);
 
@@ -34,8 +38,10 @@
         evt.currentTarget.classList.add('map__pin--active');
       });
 
-      list.appendChild(pin);
+      fragment.appendChild(pin);
+
     });
+    list.appendChild(fragment);
   };
 
   window.pin = {
