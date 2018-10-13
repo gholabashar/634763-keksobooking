@@ -17,9 +17,7 @@
 
     return item;
   };
-  /*
-  var fragment = document.createDocumentFragment();
-  */
+
   var render = function (hosts) {
     var fragment = document.createDocumentFragment();
 

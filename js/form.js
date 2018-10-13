@@ -2,7 +2,6 @@
 
 (function () {
   var RESET_TIMEOUT = 300;
-
   var Rooms = {
     MIN: 1,
     MAX: 3
@@ -135,7 +134,6 @@
     times.forEach(function (select) {
       select.addEventListener('change', onTimeChange);
     });
-
     room.addEventListener('change', onRoomChange);
     type.addEventListener('change', onTypeChange);
     title.addEventListener('invalid', onTitleInvalid);
@@ -160,9 +158,8 @@
     setAdress(position);
     setPrice();
     update();
-    address.setAttribute('disabled', 'disabled');
     addHandlers();
-
+    address.setAttribute('disabled', 'disabled');
     form.classList.remove('ad-form--disabled');
   };
 
@@ -192,7 +189,6 @@
   };
 
   var setSuccess = function () {
-
     setTimeout(updateValues, RESET_TIMEOUT);
     resetAllData();
     showMessage();
@@ -211,7 +207,6 @@
     var main = document.body.querySelector('main');
 
     main.appendChild(template);
-
     document.addEventListener('keydown', onErrorKeydown);
     document.addEventListener('click', onErrorClick);
   };
@@ -220,7 +215,6 @@
     var dialog = document.querySelector('.error');
 
     dialog.remove();
-
     document.removeEventListener('keydown', onKeydown);
     document.removeEventListener('click', onClick);
   };

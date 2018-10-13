@@ -110,11 +110,9 @@
     mapInit();
     showPins();
     window.upload.setActived();
-
     window.form.init(getPinPosition());
     window.form.toggle(filters, false);
     window.form.toggle(fields, false);
-
     pin.removeEventListener('mouseup', onPinMouseup);
     pin.removeEventListener('keydown', onPinKeydown);
     mapFilter.addEventListener('change', onFilterChange);
@@ -146,7 +144,6 @@
 
     window.card.hide();
     removePins();
-
     window.pin.render(results.slice(0, MAX_PINS));
   });
 
