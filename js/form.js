@@ -160,7 +160,7 @@
     setPrice();
     update();
     addHandlers();
-    address.setAttribute('disabled', 'disabled');
+    // address.setAttribute('readonly', 'disabled');
     form.classList.remove('ad-form--disabled');
   };
 
@@ -217,7 +217,7 @@
 
     dialog.remove();
     document.removeEventListener('keydown', onKeydown);
-    document.removeEventListener('click', onClick);
+    document.removeEventListener('click', onErrorClick);
   };
 
   var onFormSubmit = function (evt) {
