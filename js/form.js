@@ -160,7 +160,6 @@
     setPrice();
     update();
     addHandlers();
-    // address.setAttribute('readonly', 'disabled');
     form.classList.remove('ad-form--disabled');
   };
 
