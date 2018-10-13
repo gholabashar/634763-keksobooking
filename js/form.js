@@ -111,6 +111,7 @@
     form.reset();
     form.classList.add('ad-form--disabled');
     removeHandlers();
+    window.upload.setDefaultPics();
     window.map.hide();
     window.map.setPageDisabled();
     window.map.resetPinPosition();

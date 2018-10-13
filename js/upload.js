@@ -134,8 +134,25 @@
     formPhoto.addEventListener('drop', onDrop);
   };
 
+  var setDefaultPics = function () {
+    var imgPreview = form.querySelector('.ad-form-header__preview img');
+    var photos = form.querySelectorAll('.ad-form__photo');
+    var draft = form.querySelector('.ad-form__photo');
+
+    photos.forEach(function (image, i) {
+      if (i > 0) {
+        image.remove();
+      }
+
+      draft.classList.remove('visually-hidden');
+    });
+
+    imgPreview.src = imgPreview.dataset.srcDefault;
+  };
+
   window.upload = {
     setActived: setActived,
-    setDisabled: setDisabled
+    setDisabled: setDisabled,
+    setDefaultPics: setDefaultPics
   };
 })();
