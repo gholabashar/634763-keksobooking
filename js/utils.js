@@ -15,7 +15,7 @@
     MAIN_GAP: 30,
     GAP_BIG_X: 70
   };
-  // MIN: 290, MAX: 650 for map2.jpg in style.css
+
   var Position = {
     MIN: 130,
     MAX: 630
