@@ -7,18 +7,16 @@
     ESC: 27
   };
   var Pin = {
-    WIDTH: 50,
-    WIDTH_BIG: 200,
+    ARROWHEIGHT: 22,
     GAP_X: 25,
-    HEIGHT: 70,
-    GAP_Y: 35,
-    MAIN_GAP: 30,
-    GAP_BIG_X: 70
+    GAP_Y: 35
   };
 
   var Position = {
-    MIN: 130,
-    MAX: 630
+    MIN_Y: 130,
+    MAX_Y: 630,
+    MIN_X: 0,
+    MAX_X: 1200
   };
 
   var HostType = {

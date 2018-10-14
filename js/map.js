@@ -15,8 +15,8 @@
   var pinTopStart = parseInt(pin.style.top, 10);
 
   var getPinPosition = function () {
-    var pinX = parseInt(pin.style.left, 10) - window.utils.Pin.GAP_X;
-    var pinY = parseInt(pin.style.top, 10) - window.utils.Pin.GAP_Y;
+    var pinX = Math.round(parseInt(pin.style.left, 10) + pin.offsetWidth / 2);
+    var pinY = Math.round(parseInt(pin.style.top, 10) + pin.offsetHeight + window.utils.Pin.ARROWHEIGHT);
 
     return [pinX, pinY].join(', ');
   };
@@ -26,13 +26,14 @@
     pin.style.top = pinTopStart + 'px';
   };
 
-  var onPinMousedown = function (evt) {
+  var onPinMouseDown = function (evt) {
     var startPoints = {
       x: evt.clientX,
       y: evt.clientY
     };
+    var dragged = false;
 
-    var onPinMousemove = function (moveEvt) {
+    var onPinMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
 
       var currentPoints = {
@@ -41,36 +42,52 @@
       };
 
       var currentY = pin.offsetTop - currentPoints.y;
-      var stopY = currentY + window.utils.Pin.GAP_Y;
       var currentX = pin.offsetLeft - currentPoints.x;
-      var stopLeftX = window.utils.Pin.GAP_X;
-      var stopRightX = document.body.offsetWidth
-        - window.utils.Pin.WIDTH_BIG / 2;
+      var pinWidth = pin.offsetWidth;
+      var halfPinWidth = Math.round(pinWidth / 2);
 
       startPoints = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
 
-      if (stopY > window.utils.Position.MIN + window.utils.Pin.MAIN_GAP
-        && stopY < window.utils.Position.MAX) {
+      if (currentX <= window.utils.Position.MIN_X - halfPinWidth) {
+        pin.style.left = window.utils.Position.MIN_X - halfPinWidth + 'px';
+      } else if (currentX >= window.utils.Position.MAX_X - halfPinWidth) {
+        pin.style.left = window.utils.Position.MAX_X - halfPinWidth + 'px';
+      } else {
+        pin.style.left = currentX + 'px';
+      }
+
+      if (currentY <= window.utils.Position.MIN_Y - pinWidth - window.utils.Pin.ARROWHEIGHT) {
+        pin.style.top = window.utils.Position.MIN_Y - pinWidth - window.utils.Pin.ARROWHEIGHT + 'px';
+      } else if (currentY >= window.utils.Position.MAX_Y - pinWidth - window.utils.Pin.ARROWHEIGHT) {
+        pin.style.top = window.utils.Position.MAX_Y - pinWidth - window.utils.Pin.ARROWHEIGHT + 'px';
+      } else {
         pin.style.top = currentY + 'px';
       }
 
-      if (stopRightX > currentX && stopLeftX < currentX) {
-        pin.style.left = currentX + 'px';
-      }
-    };
-
-    var onPinMouseup = function (upEvt) {
-      upEvt.preventDefault();
-      document.removeEventListener('mousemove', onPinMousemove);
-      document.removeEventListener('mouseup', onPinMouseup);
       window.form.setAdress(getPinPosition());
     };
 
-    document.addEventListener('mousemove', onPinMousemove);
-    document.addEventListener('mouseup', onPinMouseup);
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onPinMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      if (dragged) {
+        var onClickPreventDefault = function (evtDragged) {
+          evtDragged.preventDefault();
+          pin.removeEventListener('click', onClickPreventDefault);
+        };
+        pin.addEventListener('click', onClickPreventDefault);
+      }
+
+      setPageActive();
+    };
+
+    document.addEventListener('mousemove', onPinMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
   var mapInit = function () {
@@ -123,7 +140,7 @@
     window.form.toggle(fields, true);
     window.upload.setDisabled();
     window.form.setAdress(getPinPosition());
-    pin.addEventListener('mousedown', onPinMousedown);
+    pin.addEventListener('mousedown', onPinMouseDown);
     pin.addEventListener('mouseup', onPinMouseup);
     pin.addEventListener('keydown', onPinKeydown);
     pin.tabIndex = 0;

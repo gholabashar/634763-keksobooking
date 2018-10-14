@@ -109,6 +109,7 @@
 
   var resetAllData = function () {
     form.reset();
+    window.filter.map.reset();
     form.classList.add('ad-form--disabled');
     removeHandlers();
     window.upload.setDefaultPics();

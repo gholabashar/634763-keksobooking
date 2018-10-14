@@ -3,11 +3,11 @@
 (function () {
   var FILTER_DEFAULT = 'any';
 
-  var filter = document.querySelector('.map__filters');
-  var filterType = filter.querySelector('#housing-type');
-  var filterPrice = filter.querySelector('#housing-price');
-  var filterRoom = filter.querySelector('#housing-rooms');
-  var filterGuest = filter.querySelector('#housing-guests');
+  var map = document.querySelector('.map__filters');
+  var filterType = map.querySelector('#housing-type');
+  var filterPrice = map.querySelector('#housing-price');
+  var filterRoom = map.querySelector('#housing-rooms');
+  var filterGuest = map.querySelector('#housing-guests');
 
   var Price = {
     LOW: 10000,
@@ -43,7 +43,7 @@
   };
 
   var checkFeature = function (pin) {
-    var features = Array.from(filter.querySelectorAll('.map__checkbox:checked'));
+    var features = Array.from(map.querySelectorAll('.map__checkbox:checked'));
 
     return features.every(function (feature) {
       return pin.offer.features.includes(feature.value);
@@ -58,6 +58,7 @@
   };
 
   window.filter = {
-    getFiltered: getFiltered
+    getFiltered: getFiltered,
+    map: map
   };
 })();
